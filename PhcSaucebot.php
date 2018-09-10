@@ -6,7 +6,7 @@ class PhcBot {
             '/^(.+?)ago|Yesterday|Today|Jahr|Monat|Monate|Tagen|Tag/i',
             '/‘(.*)/msi',
         );
-    protected $debug = true;
+    protected $debug = false;
     protected $cleanString;
     
     public function __construct() {
@@ -46,6 +46,9 @@ class PhcBot {
         return "[sauce]({{url}}) (for sure NSFW)\n\n&nbsp;\n\n"
                 . "{{title}}\n\n&nbsp;\n\n"
                 . "{{rating}}\n\n&nbsp;\n"
+                . "^[github](https://github.com/ttdoomfist/phcsaucebot)"
+                . " ^| ^[how](https://www.reddit.com/user/phcsaucebot/comments/8c7yms/how_does_the_bot_works/)"
+                . " ^| ^[about](https://www.reddit.com/user/phcsaucebot/comments/84x3yx/about_saucebot/) \n\n&nbsp;\n"
                 . "^I'm ^a ^bot. ^see ^profile ^for ^info. ^-1 ^voting ^for ^removal\n\n&nbsp;\n"
                 . "";
     }
@@ -89,12 +92,13 @@ class PhcBot {
             }
             if(in_array($thread['data']['id'],$this->finishedThreads) || !isset($thread['data']['preview'])) {
                 $this->finishedThreads[] = $thread['data']['id'];
+                continue;
             }
             
             $image = $thread['data']['preview']['images'][0]['source']['url'];
 
             $imageData = file_get_contents(str_replace('&amp;','&',$image));
-            $localImage = "cache/ocr_image_".time().'.jpg';
+            $localImage = __DIR__."/cache/ocr_image_".time().'.jpg';
             file_put_contents($localImage, $imageData);
             exec('convert -units PixelsPerInch '.$localImage.' -resample 300 '.$localImage);
 
@@ -148,13 +152,16 @@ class PhcBot {
                 
                 $text = $this->getCommentText($replacements);
                 $this->post($text, $thread);
-            } 
+            } else {
+                
+            }
+            
             $this->finishedThreads[] = $thread['data']['id'];
             $i++;
         }
 
         if($this->debug == false) {
-            PhcBot\Database::store('threads',json_encode(array_slice($this->finishedThreads,-100)));
+            TTDoomFist\Database::store('threads',json_encode(array_slice($this->finishedThreads,-100)));
         }
         
 
