@@ -160,6 +160,41 @@ class PhcBot {
 
     }
     
+    public function checkVoting() {
+        $endpoint = 'user/phcsaucebot/comments';
+        $params = array(
+            'sort'      => 'new',
+            'limit'     => 100,
+            'username'  => 'phcsaucebot',
+            'type'      => 'comments'
+        );
+
+        $comments = $this->getReddit()->getAuth($endpoint,$params);
+        $delIds = array();
+
+        if(isset($comments['data']['children']) && count($comments['data']['children']) > 0) {
+
+            foreach($comments['data']['children'] as $comment) {
+                if((int)$comment['data']['score'] < 0) {
+                    $delIds[] = $comment['data']['name'];
+                }
+
+            }
+        }
+        
+        foreach($delIds as $id) {
+            $d = $this->getReddit()->postAuth('api/del', array('id' => $id));
+            if($this->debug == true) {
+                print_r($d);
+            }
+            
+        }
+        
+        if($this->debug == true) {  
+            print_r($comments);
+        }
+    }
+    
     protected function getCommentText($replacements) {
         
         $search = array_keys($replacements);
