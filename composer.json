@@ -1,0 +1,19 @@
+{
+    "name": "waffelheld/phcsaucebot",
+    "authors": [
+        {
+            "name": "Waffelheld",
+            "email": "hello@waffelheld.de"
+        }
+    ],
+    "require": {
+        "waffelheld/phpredditapi": "0.2.1",
+        "thiagoalessio/tesseract_ocr": "^2.2"
+    }, 
+    "autoload": {
+        "psr-4": {
+            "Waffelheld\\phpredditapi\\": "vendor/waffelheld/phpredditapi/src/",
+            "TTDoomFist\\": "src/"
+        }
+    }
+}
